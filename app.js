@@ -14,7 +14,8 @@ ctx.lineWidth = 2;
 var amplitude = 100,
     startingPeriod = 600,
     period = startingPeriod,
-    x = 0;
+    x = 0,
+    animate = false;
 
 function curve(x) {
   return Math.sin(x / period) * amplitude;
@@ -32,8 +33,10 @@ function draw() {
   ctx.stroke();
 //   setTimeout(draw, 100);
 //   setInterval(draw, 1000);
-//   requestAnimationFrame(draw);
+  if (animate) requestAnimationFrame(draw);
 }
 
-draw();
+(animate = true) && draw();
+(animate = false) || draw();
+
 
