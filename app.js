@@ -15,12 +15,10 @@ ctx.lineWidth = 2;
 
 var amplitude = 100,
     startingPeriod = 1200,
-    drawX = 0,
-    phaseX = 0,
     period = startingPeriod,
     points = [],
-    maxPoints = 30,
-    length = 10,
+    maxPoints = 5,
+    length = 100,
     clear = function() {
       ctx.fillStyle = "black";
       ctx.clearRect(0,0,width, height);
@@ -28,52 +26,51 @@ var amplitude = 100,
     };
 
 
-function curve(phaseX) {
-  return Math.sin(phaseX / period) * amplitude;
-}
-function phase(y) {
-  return period * Math.asin(y / amplitude);
+function curve(x) {
+  return Math.sin(x / period) * amplitude;
 }
 
 function newDraw() {
+  period -= 0.1;
   clear();
   if (points.length >= maxPoints) points.splice(0,1);
 
   var newPoint = {
-    drawX: drawX,
-    phaseX: phaseX,
+    x: (x += length),
     brightness: 1.0,
     ys: []
   };
   for (var j = 0; j <= length; j++) {
-    newPoint.ys.push(curve(phaseX + j));
+    newPoint.ys.push(curve(this.x + j));
   }
   points.push(newPoint);
 
   ctx.fillStyle = "white";
   for (var i = 0, l = points.length; i < l; i++) {
     var point = points[i],
-        colour = Math.round(255 * point.brightness);
+        colour = Math.round(255 * point.brightness),
+        startX = point.x % width;
 
     ctx.beginPath();
     ctx.strokeStyle = "rgb(" + colour + "," + colour + "," + colour + ")";
-    ctx.moveTo(point.drawX, point.y);
+    ctx.moveTo(startX, point.y);
     for (var j = 0; j <= length; j++) {
-      ctx.lineTo(point.drawX + j, baseY + point.ys[j]);
+      ctx.lineTo(startX + j, baseY + point.ys[j]);
     }
     ctx.stroke();
     point.brightness -= 1/maxPoints;
   }
-
-  period -= 0.1;
-  drawX = (drawX += length) % width;
-  phaseX = phase(newPoint.ys[newPoint.ys.length - 1]) % period;
   if (animate) requestAnimationFrame(newDraw);
 }
 
 (animate = false) || newDraw();
 (animate = true) && newDraw();
 points;
+
+
+
+
+
 
 
 
