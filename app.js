@@ -14,11 +14,11 @@ ctx.lineWidth = 2;
 
 
 var amplitude = 100,
-    startingPeriod = 1200,
+    startingPeriod = 600,
     period = startingPeriod,
     points = [],
     maxPoints = 100,
-    length = 50,
+    length = 5,
     clear = function() {
       ctx.fillStyle = "black";
       ctx.clearRect(0,0,width, height);
@@ -31,42 +31,37 @@ function curve(x) {
 }
 
 function newDraw() {
-  period -= 0.1;
+  period -= 1;
   clear();
   if (points.length >= maxPoints) points.splice(0,1);
 
-  var newPoint = {
-    x: x,
-    brightness: 1.0,
-    ys: []
-  };
-  for (var j = 0; j <= length; j++) {
-    newPoint.ys.push(curve(this.x + j));
-  }
-  points.push(newPoint);
+  points.push({
+    x: (x += length),
+    y: curve(x) + baseY,
+    brightness: 1.0
+  });
 
   ctx.fillStyle = "white";
-  for (var i = 0, l = points.length; i < l; i++) {
-    var point = points[i],
-        colour = Math.round(255 * point.brightness),
-        startX = point.x % width;
+  for (var i = 0, l = points.length - 1; i < l; i++) {
+    var pointA = points[i],
+        pointB = points[i+1],
+        colour = Math.round(255 * pointA.brightness),
+        startX = pointA.x % width,
+        endX = (pointB.x - pointA.x) + startX;
 
     ctx.beginPath();
     ctx.strokeStyle = "rgb(" + colour + "," + colour + "," + colour + ")";
-    ctx.moveTo(startX, point.y);
-    for (var j = 0; j <= length; j++) {
-      ctx.lineTo(startX + j, baseY + point.ys[j]);
-    }
+    ctx.moveTo(startX, pointA.y);
+    ctx.lineTo(endX, pointB.y);
     ctx.stroke();
-    point.brightness -= 1/maxPoints;
+    pointA.brightness -= 1/maxPoints;
   }
-  x += length;
   if (animate) requestAnimationFrame(newDraw);
 }
 
 (animate = false) || newDraw();
 (animate = true) && newDraw();
-points;
+
 
 
 
