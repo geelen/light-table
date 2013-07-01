@@ -17,8 +17,8 @@ var amplitude = 100,
     startingPeriod = 1200,
     period = startingPeriod,
     points = [],
-    maxPoints = 5,
-    length = 100,
+    maxPoints = 100,
+    length = 50,
     clear = function() {
       ctx.fillStyle = "black";
       ctx.clearRect(0,0,width, height);
@@ -36,7 +36,7 @@ function newDraw() {
   if (points.length >= maxPoints) points.splice(0,1);
 
   var newPoint = {
-    x: (x += length),
+    x: x,
     brightness: 1.0,
     ys: []
   };
@@ -60,6 +60,7 @@ function newDraw() {
     ctx.stroke();
     point.brightness -= 1/maxPoints;
   }
+  x += length;
   if (animate) requestAnimationFrame(newDraw);
 }
 
